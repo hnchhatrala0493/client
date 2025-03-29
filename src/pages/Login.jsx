@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 const Login = () => {
   const [state,setState] = useState("Sign Up");
   const navigate = useNavigate();
-  const {backendUrl,setIsLoggedIn} = useContext(AppContent);
+  const {backendUrl,setIsLoggedIn,getUserData} = useContext(AppContent);
   const [name,setName]=useState('');
   const [email,setEmail]=useState('');
   const [password,setPassword]=useState('');
@@ -20,21 +20,23 @@ const Login = () => {
         const{data} = await axios.post(backendUrl +'/api/auth/register',{name,email,password});
         if(data.success){
           setIsLoggedIn(true)
-          navigate('/')
+          //getUserData()
+          navigate('/login')
         }else{
           toast.error(data.message);
         }
-      }else{
+      } else {
         const{data} = await axios.post(backendUrl +'/api/auth/login',{email,password});
         if(data.success){
           setIsLoggedIn(true)
-          navigate('/')
+          //getUserData()
+          navigate('/dashboard')
         }else{
           toast.error(data.message);
         }
       }
     } catch (error) {
-      //next(error);
+      toast.error(error.message);
     }
   }  
   return (
@@ -58,7 +60,9 @@ const Login = () => {
             <img src={assets.lock_icon} alt="Person icon" />
             <input type='password' onChange={e=>setPassword(e.target.value)} value={password} className='bg-transparent outline-none' placeholder='Enter a Password' />
           </div>
-          <p onClick={()=>navigate("/reset-password")} className='mb-4 text-indigo-400 cursor-pointer'><button onClick={()=>navigate('/email-verify')}>Forgot Password</button></p>
+          {state === "Login" && (
+            <p onClick={()=>navigate("/forgot-password")} className='mb-4 text-indigo-400 cursor-pointer'>Forgot Password</p>
+          )}
           <button className='w-full py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-900 text-white font-medium'>{state}</button>
         </form>
         {state === "Sign Up" ? (
