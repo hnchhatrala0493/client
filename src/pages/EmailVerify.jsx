@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { assets } from '../assets/assets'
 import { useNavigate } from 'react-router-dom';
 import { AppContent } from '../context/AppContext';
@@ -9,7 +9,7 @@ const EmailVerify = () => {
 
   axios.defaults.withCredentials = true;
   const navigate = useNavigate();
-  const {backendUrl,getUserData}=useContext(AppContent);
+  const {backendUrl,getUserData,IsLoggedIn,userData}=useContext(AppContent);
   const [otp,setEmailOTP] = useState('');
   const inputRefs = React.useRef([]);
   const handleInput=(e,index)=>{
@@ -38,7 +38,7 @@ const EmailVerify = () => {
       e.preventDefault();
       const otpArray = inputRefs.current.map(e=>e.value)
       const otp = otpArray.join('')
-      const {data} = await axios.post(backendUrl+'/api/auth/verify-account');
+      const {data} = await axios.post(backendUrl + '/api/auth/verify-account');
       if(data.success){
         toast.success(data.message);
         getUserData()
@@ -51,7 +51,9 @@ const EmailVerify = () => {
     }
   }
 
-
+  useEffect(()=>{
+    IsLoggedIn && userData && userData.IsAccountVerified && navigate('/')
+  },[IsLoggedIn,userData]);
 
   return (
     <div className='flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-purple-400'>
